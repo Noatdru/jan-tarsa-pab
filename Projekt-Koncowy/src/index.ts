@@ -2,6 +2,8 @@ import express from "express";
 import { connect as dbConnect } from "mongoose";
 import restauracjeRouter from "./restauracje";
 import stolikiRouter from "./stoliki";
+import pracwonikRouter from "./pracownik";
+import produktRouter from "./produkt";
 const app = express();
 const PORT = process.env.PORT ?? 3000;
 const mongoUri =
@@ -12,6 +14,8 @@ dbConnect(mongoUri)
   app.use(express.json())
 app.use("/restauracje", restauracjeRouter);
 app.use("/stoliki", stolikiRouter);
+app.use("/pracownik", pracwonikRouter);
+app.use("/produkt", produktRouter)
 
 app.listen(PORT, () => {
   console.log(`app running on port: ${PORT}`);
