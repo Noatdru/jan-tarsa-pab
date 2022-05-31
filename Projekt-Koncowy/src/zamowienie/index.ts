@@ -1,22 +1,52 @@
-import { Router, Request, Response } from "express";
+import e, { Router, Request, Response } from "express";
 import Zamowienie from "./model";
+/*
+$sum - Returns a sum of numerical values. Ignores non-numeric values
 
+*/
 export default Router()
-  .get("/", (req: Request, res: Response) => {
-    try {
-      const zamowienia = Zamowienie.aggregate([
+  .get("/", async (req: Request, res: Response) => {
+    await Zamowienie.find()
+      .then((result:any) => {
+        res.send(result);
+      })
+      .catch((e:any) => {
+        res.status(500).send
+      }) 
+  })
+      
+  .get("/oblozenie", async (req: Request, res: Response) => {
+    
+      Zamowienie.aggregate([
         {
-          $addFields: {
-            kwota: { $round: [{ $sum: "$pozycje.cena" }, 2] },
+          $group: {
+            _id: "$stolik",
+            iloscZamowien: { $sum: 1 },
           },
         },
-      ]);
-
-      return res.send(zamowienia);
-    } catch (e) {
-      res.status(500).send(e);
-    }
+      ]).then((result: any) => {
+        res.send(result);
+    })
+    .catch((e: any) => {
+        res.status(500).send(e)
+    })
   })
+  .get("/oblozenieKelnera", async (req: Request, res: Response) => {
+    
+    Zamowienie.aggregate([
+      {
+        $group: {
+          _id: "$pracownik",
+          iloscZamowien: { $sum: 1 },
+        },
+      },
+    ]).then((result: any) => {
+      res.send(result);
+  })
+  .catch((e: any) => {
+      res.status(500).send(e)
+  })
+})
   .get("/:id", async (req: Request<{ id: number }>, res: Response) => {
     const { id } = req.params;
 
@@ -24,22 +54,6 @@ export default Router()
       const zamowienie = await Zamowienie.findById(id);
 
       return res.send(zamowienie);
-    } catch (e) {
-      res.status(500).send(e);
-    }
-  })
-  .get("/oblozenie", async (req: Request, res: Response) => {
-    try {
-      const oblozenie = Zamowienie.aggregate([
-        {
-          $group: {
-            _id: "$stolik",
-            iloscZamowien: { $sum: 1 },
-          },
-        },
-      ]);
-
-      return res.send(oblozenie);
     } catch (e) {
       res.status(500).send(e);
     }

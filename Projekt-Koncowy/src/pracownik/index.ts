@@ -1,5 +1,7 @@
-import { Router, Request, Response } from "express";
+import e, { Router, Request, Response } from "express";
 import Pracownik from "./model";
+import Zamowienie from "./model";
+
 
 export default Router()
   .get("/", async (req: Request, res: Response) => {
@@ -11,6 +13,7 @@ export default Router()
       res.status(500).send(e);
     }
   })
+
   .get("/:id", async (req: Request<{ id: number }>, res: Response) => {
     const { id } = req.params;
 
